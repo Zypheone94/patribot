@@ -1,6 +1,5 @@
 import discord
-import time
-import schedule
+from discord.ext import tasks
 
 from dotenv import dotenv_values
 
@@ -8,27 +7,22 @@ from dotenv import dotenv_values
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+bot = discord.Client(intents=intents)
 
 # Récupération des variables d'environnement pour utilisation
 env_variable = dotenv_values(".env")
 
-
-def call_du_jeudi():
-    print('test')
-    client.run(env_variable['TOKEN'])
-
-
-schedule.every(1).minute.do(call_du_jeudi)
-
-
-@client.event
+@bot.event
 async def on_ready():
-    print(f"We have logged in as {client.user}")
-    print('test du call')
-    channel = client.get_channel(1048956032237441074)
-    await channel.send('@everyone test !')
+    print("Logged in as")
+    print(bot.user.name)
+    print("------")
+    msg1.start()
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+
+@tasks.loop(minutes=1)
+async def msg1():
+    message_channel = bot.get_channel(1048956032237441074)
+    await message_channel.send("@everyone -> call du jeudi !")
+
+bot.run(env_variable['TOKEN'])
